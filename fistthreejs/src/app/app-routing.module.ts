@@ -1,14 +1,23 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { CubeComponent } from './cube/cube.component';
-
+import { GridMapComponent } from './grid-map/grid-map.component';
+import { InteractCubeComponent } from './interact-cube/interact-cube.component';
 const routes: Routes = [ { 
-  path: 'home',
+  path: 'orbit',
   component: CubeComponent
   },
   { 
+    path: 'gridmap',
+    component: GridMapComponent
+    },
+    { 
+      path: 'interactcube',
+      component: InteractCubeComponent
+      },
+  { 
   path: '',
-  redirectTo: '/home',
+  redirectTo: '/orbit',
   pathMatch: 'full'
   }];
 

@@ -1,12 +1,13 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
+import { MapControls  } from 'three/examples/jsm/controls/OrbitControls';
+
 @Component({
-  selector: 'app-cube',
-  templateUrl: './cube.component.html',
-  styleUrls: ['./cube.component.scss']
+  selector: 'app-grid-map',
+  templateUrl: './grid-map.component.html',
+  styleUrls: ['./grid-map.component.scss']
 })
-export class CubeComponent implements AfterViewInit {
+export class GridMapComponent implements AfterViewInit {
   /* HELPER PROPERTIES (PRIVATE PROPERTIES) */
   private camera: THREE.PerspectiveCamera;
 
@@ -55,7 +56,7 @@ export class CubeComponent implements AfterViewInit {
 
   /* STAGING, ANIMATION, AND RENDERING */
 
-  controls: OrbitControls;
+  controls: MapControls;
 
   /**
    * Create the scene
@@ -72,7 +73,7 @@ export class CubeComponent implements AfterViewInit {
     var gridHelper = new THREE.GridHelper( 2000, 20 );
 		this.scene.add( gridHelper );
     this.camera.position.z = this.cameraZ;
-    this.controls = new OrbitControls(this.camera);
+    this.controls = new MapControls(this.camera);
     this.controls.rotateSpeed = 1.0;
     this.controls.zoomSpeed = 1.2;
   }
@@ -91,7 +92,7 @@ export class CubeComponent implements AfterViewInit {
     this.renderer.setPixelRatio(devicePixelRatio);
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
     this.renderer.shadowMap.enabled = true;
-    let component: CubeComponent = this;
+    let component: GridMapComponent = this;
     (function render() {
       requestAnimationFrame(render);
      
@@ -121,3 +122,4 @@ export class CubeComponent implements AfterViewInit {
     this.startRenderingLoop();
   }
 }
+

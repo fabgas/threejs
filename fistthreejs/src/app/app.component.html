@@ -1,2 +1,10 @@
-
-<router-outlet></router-outlet>
+<div class="container">
+  <div class="nav-bar">
+    <button (click)="onClick('orbit')"> Grille Orbit </button>
+    <button (click)="onClick('gridmap')"> Grille Map </button>
+    <button (click)="onClick('interactcube')"> Interaction cube </button>
+  </div>
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>
