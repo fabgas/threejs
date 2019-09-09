@@ -1,3 +1,18 @@
-<section>
-    <canvas #canvas (window:resize)="onResize($event)"></canvas>
-</section>
+<div class="container">
+    <div class="toolbar">
+        <button (click)="changeMode('map')" >
+         map
+        </button>
+        <button (click)="changeMode('orbit')" >
+            orbit
+           </button>
+        <button (click)="changeMode('edition')" style="border: 0; background: transparent">
+            <img src="../assets/textures/grass_dirt.png" width="90" height="90" alt="submit" />
+        </button>
+
+
+    </div>
+    <section>
+        <canvas #canvas (window:resize)="onResize($event)"></canvas>
+    </section>
+</div>

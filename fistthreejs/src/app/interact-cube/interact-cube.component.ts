@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, Input, ViewChild, HostListener } from '@angular/core';
 import * as THREE from 'three';
-import { MapControls } from 'three/examples/jsm/controls/OrbitControls';
+import { MapControls, OrbitControls } from 'three/examples/jsm/controls/OrbitControls';
 @Component({
   selector: 'app-interact-cube',
   templateUrl: './interact-cube.component.html',
@@ -20,7 +20,7 @@ export class InteractCubeComponent implements AfterViewInit {
   private renderer: THREE.WebGLRenderer;
   private scene: THREE.Scene;
 
-  private cubeHeight = 10;
+  private cubeHeight = 50;
 
 
   /* STAGE PROPERTIES */
@@ -32,7 +32,7 @@ export class InteractCubeComponent implements AfterViewInit {
   constructor() { }
 
   /* STAGING, ANIMATION, AND RENDERING */
-  controls: MapControls;
+  controls: any;
   /* CURSEUR */
   rollOverMesh;
   rollOverMaterial;
@@ -43,7 +43,10 @@ export class InteractCubeComponent implements AfterViewInit {
   objects = [];
   cubeGeo;
   cubeMaterial;
+  decalage:any;
 
+  /* MODE DE L'ecran */
+  mode= 'edition';
   /**
    * Create the scene
    */
@@ -61,9 +64,9 @@ export class InteractCubeComponent implements AfterViewInit {
     var gridHelper = new THREE.GridHelper(2000, 40);
     this.scene.add(gridHelper);
     this.camera.position.z = this.cameraZ;
-    this.controls = new MapControls(this.camera);
-    this.controls.rotateSpeed = 1.0;
-    this.controls.zoomSpeed = 1.2;
+//    this.controls = new MapControls(this.camera);
+//    this.controls.rotateSpeed = 1.0;
+//    this.controls.zoomSpeed = 1.2;
     /* Curseur */
     var rollOverGeo = new THREE.BoxBufferGeometry(50, this.cubeHeight, 50);
     this.rollOverMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.5, transparent: true });
@@ -88,7 +91,8 @@ export class InteractCubeComponent implements AfterViewInit {
     this.plane = new THREE.Mesh(geometry, new THREE.MeshBasicMaterial({ visible: false }));
     this.scene.add(this.plane);
     this.objects.push(this.plane);
-
+    // calculd décalage
+    this.decalage = (window.innerWidth - this.canvas.clientWidth);
   }
 
   private getAspectRatio() {
@@ -103,12 +107,13 @@ export class InteractCubeComponent implements AfterViewInit {
     // Use canvas element in template
     this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas });
     this.renderer.setPixelRatio(devicePixelRatio);
+
     this.renderer.setSize(this.canvas.clientWidth, this.canvas.clientHeight);
     this.renderer.shadowMap.enabled = true;
     let component: InteractCubeComponent = this;
     (function render() {
       requestAnimationFrame(render);
-
+    
       component.renderer.render(component.scene, component.camera);
     }());
   }
@@ -157,33 +162,36 @@ export class InteractCubeComponent implements AfterViewInit {
   onDocumentMouseMove(event) {
     event.preventDefault();
     // 80 vient de barre de navigation d'une hauteur de 80px
-    this.mouse.set((event.clientX / this.canvas.clientWidth) * 2 - 1, - ((event.clientY - 80) / this.canvas.clientHeight) * 2 + 1);
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-    var intersects = this.raycaster.intersectObjects(this.objects);
-    if (intersects.length > 0) {
-      var intersect = intersects[0];
-      this.rollOverMesh.position.copy(intersect.point).add(intersect.face.normal);
-      this.rollOverMesh.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+    if (this.mode === 'edition') {
+      this.mouse.set(((event.clientX - this.decalage) / this.canvas.clientWidth) * 2 - 1, - ((event.clientY - 80) / this.canvas.clientHeight) * 2 + 1);
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+      var intersects = this.raycaster.intersectObjects(this.objects);
+      if (intersects.length > 0) {
+        var intersect = intersects[0];
+        this.rollOverMesh.position.copy(intersect.point).add(intersect.face.normal);
+        this.rollOverMesh.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+      }
+      this.render();
     }
-    let component: InteractCubeComponent = this;
-    component.renderer.render(component.scene, component.camera);
   }
   @HostListener('mousedown', ['$event'])
   onDocumentMouseDown(event) {
     event.preventDefault();
-    this.mouse.set((event.clientX / this.canvas.clientWidth) * 2 - 1, - ((event.clientY - 80) / this.canvas.clientHeight) * 2 + 1);
-    this.raycaster.setFromCamera(this.mouse, this.camera);
-    var intersects = this.raycaster.intersectObjects(this.objects);
-    if (intersects.length > 0) {
-      var intersect = intersects[0];
-      console.log(this.cubeMaterial+'-');
-      var voxel = new THREE.Mesh(this.cubeGeo, this.cubeMaterial);
-      voxel.position.copy(intersect.point).add(intersect.face.normal);
-      voxel.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
-      this.scene.add(voxel);
-      this.objects.push(voxel);
+    if (this.mode === 'edition') {
+      this.mouse.set(((event.clientX - this.decalage) / this.canvas.clientWidth) * 2 - 1, - ((event.clientY - 80) / this.canvas.clientHeight) * 2 + 1);
+      this.raycaster.setFromCamera(this.mouse, this.camera);
+      var intersects = this.raycaster.intersectObjects(this.objects);
+      if (intersects.length > 0) {
+        var intersect = intersects[0];
+        console.log(this.cubeMaterial + '-');
+        var voxel = new THREE.Mesh(this.cubeGeo, this.cubeMaterial);
+        voxel.position.copy(intersect.point).add(intersect.face.normal);
+        voxel.position.divideScalar(50).floor().multiplyScalar(50).addScalar(25);
+        this.scene.add(voxel);
+        this.objects.push(voxel);
 
-      this.render();
+        this.render();
+      }
     }
   }
   render() {
@@ -217,5 +225,30 @@ export class InteractCubeComponent implements AfterViewInit {
     });
   }
 
+  changeMode(newMode:string) {
+    var prevCamera = this.camera;
+    this.camera = new THREE.PerspectiveCamera(45, this.canvas.clientWidth / this.canvas.clientHeight, 1, 10000);
+    var vector = new THREE.Vector3( 0, 0, - 1 );
+    var dirVector = vector.applyQuaternion( prevCamera.quaternion );
+   console.log('position' + prevCamera.position);
+    this.camera.position.copy( prevCamera.position );
+    this.camera.rotation.copy( prevCamera.rotation );
+  
+    this.mode = newMode;
+    if (this.mode==='edition') {
+    }
+    if (this.mode==='orbit') {
+      this.controls = new OrbitControls(this.camera);
+      this.controls.rotateSpeed = 1.0;
+      this.controls.zoomSpeed = 1.2;
+    
+    }
+    if (this.mode==='map') {
+      this.controls = new MapControls(this.camera);
+      this.controls.rotateSpeed = 1.0;
+      this.controls.zoomSpeed = 1.2;
+    }
+    console.log('position' + this.camera.position.x);
+  }
 }
 
