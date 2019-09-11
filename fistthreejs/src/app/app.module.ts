@@ -6,13 +6,15 @@ import { AppComponent } from './app.component';
 import { CubeComponent } from './cube/cube.component';
 import { GridMapComponent } from './grid-map/grid-map.component';
 import { InteractCubeComponent } from './interact-cube/interact-cube.component';
+import { MenuComponent } from './menu/menu.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CubeComponent,
     GridMapComponent,
-    InteractCubeComponent
+    InteractCubeComponent,
+    MenuComponent
   ],
   imports: [
     BrowserModule,

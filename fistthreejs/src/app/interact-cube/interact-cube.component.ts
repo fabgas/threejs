@@ -44,7 +44,7 @@ export class InteractCubeComponent implements AfterViewInit {
   cubeGeo;
   cubeMaterial;
   decalage:any;
-
+  helper;
   /* MODE DE L'ecran */
   mode= 'edition';
   /**
@@ -68,6 +68,8 @@ export class InteractCubeComponent implements AfterViewInit {
 //    this.controls.rotateSpeed = 1.0;
 //    this.controls.zoomSpeed = 1.2;
     /* Curseur */
+     this.helper = new THREE.CameraHelper( this.camera );
+    this.scene.add( this.helper );
     var rollOverGeo = new THREE.BoxBufferGeometry(50, this.cubeHeight, 50);
     this.rollOverMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, opacity: 0.5, transparent: true });
     this.rollOverMesh = new THREE.Mesh(rollOverGeo, this.rollOverMaterial);
@@ -229,11 +231,13 @@ export class InteractCubeComponent implements AfterViewInit {
     var prevCamera = this.camera;
     this.camera = new THREE.PerspectiveCamera(45, this.canvas.clientWidth / this.canvas.clientHeight, 1, 10000);
     var vector = new THREE.Vector3( 0, 0, - 1 );
+    this.camera.lookAt(100,0,0);
     var dirVector = vector.applyQuaternion( prevCamera.quaternion );
-   console.log('position' + prevCamera.position);
     this.camera.position.copy( prevCamera.position );
-    this.camera.rotation.copy( prevCamera.rotation );
-  
+  //  this.camera.rotation.copy( prevCamera.rotation );
+    this.scene.remove( this.helper );
+    this.helper = new THREE.CameraHelper( this.camera );
+    this.scene.add(this.helper);
     this.mode = newMode;
     if (this.mode==='edition') {
     }
@@ -241,14 +245,12 @@ export class InteractCubeComponent implements AfterViewInit {
       this.controls = new OrbitControls(this.camera);
       this.controls.rotateSpeed = 1.0;
       this.controls.zoomSpeed = 1.2;
-    
     }
     if (this.mode==='map') {
       this.controls = new MapControls(this.camera);
       this.controls.rotateSpeed = 1.0;
       this.controls.zoomSpeed = 1.2;
     }
-    console.log('position' + this.camera.position.x);
   }
 }
 
