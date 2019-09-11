@@ -17,8 +17,14 @@
 @media (max-width: 640px) {
     .panel {
      position: absolute;
-     top:-1100px;
-     left:0px;
+     top:100px;
+     left:-1100px;
+     -webkit-transition-property: width height background-color font-size left top -webkit-transform color;
+     -webkit-transition-duration: 1s;
+       -webkit-transition-timing-function: ease-in-out;
+    transition-property: width height background-color font-size left top transform -webkit-transform color;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-in-out;
     }
     .show {
         display: block;
